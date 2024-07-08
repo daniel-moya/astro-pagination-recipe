@@ -1,0 +1,72 @@
+---
+import { getPageData } from "../utils/data";
+
+export async function getStaticPaths() {
+	const pages = [];
+	let currentPage: number | null = 0;
+	while (currentPage !== null) {
+		const pageData = getPageData(currentPage);
+		if (pageData) {
+			pages.push(pageData);
+		}
+		currentPage = pageData?.nextPage || null;
+	}
+	return pages.map((page, index) => {
+		return {
+			params: {
+				slug: `page/${index + 1}`,
+			},
+			props: {
+				resources: page?.data,
+				prevPage:
+					page?.prevPage !== null
+						? page.prevPage + 1
+						: null,
+				currentPage: page?.currentPage + 1,
+				nextPage:
+					page?.nextPage !== null
+						? page.nextPage + 1
+						: null,
+				totalPages: page?.totalPages,
+				size: page?.size,
+			},
+		};
+	});
+}
+const {
+	resources = [],
+	nextPage,
+	currentPage,
+	prevPage,
+	totalPages,
+	size,
+} = Astro.props;
+---
+
+<html>
+	<head>
+		<title>Resources</title>
+	</head>
+	<body>
+		{
+			resources.map((resource) => (
+				<article class="product">
+					<h3>{resource.title}</h3>
+					<p>{resource.description}</p>
+				</article>
+			))
+		}
+		{
+			prevPage !== null ? (
+				<a href={`/page/${prevPage}`}>Prev Page</a>
+			) : null
+		}
+		{
+			nextPage !== null ? (
+				<a href={`/page/${nextPage}`}>Next Page</a>
+			) : null
+		}
+		<p>{currentPage}/{totalPages}</p>
+		<p>{size} Resources</p>
+	</body>
+</html>

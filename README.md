@@ -1,3 +1,6 @@
+# Pagination Recipe
+Recipe for using pagination for SSG in Astro
+
 # Astro Starter Kit: Minimal
 
 ```sh
